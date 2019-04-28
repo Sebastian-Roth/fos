@@ -202,6 +202,11 @@ beginUpload() {
             clearScreen
             ;;
     esac
+    # save UEFI NVRAM boot entry information
+    if [[ -d /sys/firmware/ ]]; then
+        mount -t efivarfs none /sys/firmware/efi/efivars
+        efibootmgr -v | sed -n "s/^.*\* \(.*\)\tHD(\([0-9]*\),[^)]*)\/File(\([^)]*\)).*/\1#\2#\3/p" >$imagePath/uefi.entries
+    fi
 }
 findHDDInfo
 echo " * Now FOG will attempt to capture the image using Partclone"
